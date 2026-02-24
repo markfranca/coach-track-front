@@ -1,14 +1,9 @@
-import './App.css'
-
-function App() {
-
+export default function App() {
   return (
-    <>
-    <h1>
-      Teste
-    </h1>
-    </>
+    <div className="h-screen flex items-center justify-center bg-black">
+      <h1 className="text-4xl font-bold text-green-500">
+        Tailwind v4 funcionando 🚀
+      </h1>
+    </div>
   )
 }
-
-export default App
