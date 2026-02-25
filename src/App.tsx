@@ -1,9 +1,30 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { LoginPage } from './pages/LoginPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
+
 export default function App() {
   return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <h1 className="text-4xl font-bold text-green-500">
-        Tailwind v4 funcionando 🚀
-      </h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        
+        {/* Rota de Login */}
+        <Route path="/login" element={<LoginPage />} />
+        
+        {/* Rota protegida - Dashboard */}
+        <Route
+          path="/class"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Rota 404 */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
