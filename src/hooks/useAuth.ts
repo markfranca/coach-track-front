@@ -17,7 +17,7 @@ export const useAuth = () => {
       
       authService.saveAuth(response);
       
-      navigate('/class');
+      navigate('/dashboard');
     } catch (err: any) {
       let errorMessage = 'Erro ao fazer login. Tente novamente.';
       if (err.response?.status === 401) {
