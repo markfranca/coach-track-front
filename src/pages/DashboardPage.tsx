@@ -18,7 +18,15 @@ export const DashboardPage = () => {
   };
 
   // Calcula estatísticas - verifica se classes é um array
+  console.log('🔍 Classes do hook:', classes);
+  console.log('🔍 É array?', Array.isArray(classes));
+  console.log('🔍 Length:', classes?.length);
+  
   const classesArray = Array.isArray(classes) ? classes : [];
+  
+  console.log('📊 Classes Array:', classesArray);
+  console.log('📊 Total:', classesArray.length);
+  
   const totalClasses = classesArray.length;
   const totalStudents = classesArray.reduce((sum, c) => sum + (c.studentsCount || 0), 0);
   const recentClass = classesArray.length > 0 
@@ -26,6 +34,10 @@ export const DashboardPage = () => {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       )[0]
     : null;
+  
+  console.log('📊 Total de turmas:', totalClasses);
+  console.log('📊 Total de alunos:', totalStudents);
+  console.log('📊 Turma mais recente:', recentClass);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
@@ -70,7 +82,7 @@ export const DashboardPage = () => {
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Bem-vindo, {user?.name?.split(' ')[0] || 'Professor'}! ⚽
+            Bem-vindo, {user?.person.name?.split(' ')[0] || 'Professor'}! ⚽
           </h2>
           <p className="text-gray-600">
             Gerencie suas turmas e acompanhe o desenvolvimento dos seus atletas

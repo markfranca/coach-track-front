@@ -8,15 +8,18 @@ interface ClassCardProps {
 export const ClassCard = ({ classData }: ClassCardProps) => {
   const navigate = useNavigate();
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryColor = (category?: string) => {
     const colors: Record<string, string> = {
-      'Sub-13': 'bg-blue-500',
-      'Sub-15': 'bg-green-500',
-      'Sub-17': 'bg-purple-500',
-      'Adulto': 'bg-orange-500',
-      'Profissional': 'bg-red-500',
+      'Programação': 'bg-blue-500',
+      'Matemática': 'bg-green-500',
+      'Física': 'bg-purple-500',
+      'Química': 'bg-orange-500',
+      'História': 'bg-red-500',
+      'Geografia': 'bg-indigo-500',
+      'Português': 'bg-pink-500',
+      'Inglês': 'bg-teal-500',
     };
-    return colors[category] || 'bg-gray-500';
+    return colors[category || ''] || 'bg-gray-500';
   };
 
   const handleClick = () => {
@@ -57,9 +60,19 @@ export const ClassCard = ({ classData }: ClassCardProps) => {
         </h3>
         
         {classData.description && (
-          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
             {classData.description}
           </p>
+        )}
+
+        {/* Horário */}
+        {classData.schedule && (
+          <div className="flex items-center gap-2 text-gray-600 mb-3">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-xs">{classData.schedule}</span>
+          </div>
         )}
 
         {/* Stats */}
