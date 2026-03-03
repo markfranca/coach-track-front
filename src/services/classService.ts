@@ -7,22 +7,22 @@ export const classService = {
     return response.data;
   },
 
-  async getById(id: string): Promise<Class> {
+  async getById(id: number): Promise<Class> {
     const response = await api.get<Class>(`/classes/${id}`);
     return response.data;
   },
 
-  async create(data: Omit<Class, 'id' | 'createdAt' | 'updatedAt' | 'studentsCount'>): Promise<Class> {
+  async create(data: { name: string; description?: string; schedule?: string }): Promise<Class> {
     const response = await api.post<Class>('/classes/', data);
     return response.data;
   },
 
-  async update(id: string, data: Partial<Class>): Promise<Class> {
+  async update(id: number, data: { name?: string; description?: string; schedule?: string }): Promise<Class> {
     const response = await api.put<Class>(`/classes/${id}`, data);
     return response.data;
   },
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     await api.delete(`/classes/${id}`);
   },
 };

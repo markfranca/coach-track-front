@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
 import { useClasses } from '../hooks/useClasses';
@@ -6,15 +6,44 @@ import { StatsCard } from '../components/StatsCard';
 import { ClassCard } from '../components/ClassCard';
 import { EmptyState } from '../components/EmptyState';
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import { ClassModal } from '../components/ClassModal';
+import { AddStudentModal } from '../components/AddStudentModal';
+import type { Class } from '../types/class';
 
 export const DashboardPage = () => {
-  const navigate = useNavigate();
   const { logout } = useAuth();
   const { user } = useUser();
-  const { classes, isLoading: classesLoading, error } = useClasses();
+  const { classes, isLoading: classesLoading, error, refetch } = useClasses();
+  
+  const [isClassModalOpen, setIsClassModalOpen] = useState(false);
+  const [isAddStudentModalOpen, setIsAddStudentModalOpen] = useState(false);
+  const [selectedClass, setSelectedClass] = useState<Class | null>(null);
 
   const handleNewClass = () => {
-    navigate('/dashboard/new');
+    setSelectedClass(null);
+    setIsClassModalOpen(true);
+  };
+
+  const handleEditClass = (classData: Class) => {
+    setSelectedClass(classData);
+    setIsClassModalOpen(true);
+  };
+
+  const handleAddStudent = (classData: Class) => {
+    setSelectedClass(classData);
+    setIsAddStudentModalOpen(true);
+  };
+
+  const handleClassSuccess = () => {
+    refetch(); // Recarrega a lista de turmas
+    setIsClassModalOpen(false);
+    setSelectedClass(null);
+  };
+
+  const handleStudentSuccess = () => {
+    refetch(); // Recarrega a lista de turmas
+    setIsAddStudentModalOpen(false);
+    setSelectedClass(null);
   };
 
   // Calcula estatísticas - verifica se classes é um array
@@ -168,12 +197,39 @@ export const DashboardPage = () => {
           {!classesLoading && !error && classesArray.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {classesArray.map((classData) => (
-                <ClassCard key={classData.id} classData={classData} />
+                <ClassCard 
+                  key={classData.id} 
+                  classData={classData}
+                  onEdit={handleEditClass}
+                  onAddStudent={handleAddStudent}
+                />
               ))}
             </div>
           )}
         </div>
       </main>
+
+      {/* Modals */}
+      <ClassModal
+        isOpen={isClassModalOpen}
+        onClose={() => {
+          setIsClassModalOpen(false);
+          setSelectedClass(null);
+        }}
+        onSuccess={handleClassSuccess}
+        classData={selectedClass}
+      />
+
+      <AddStudentModal
+        isOpen={isAddStudentModalOpen}
+        onClose={() => {
+          setIsAddStudentModalOpen(false);
+          setSelectedClass(null);
+        }}
+        onSuccess={handleStudentSuccess}
+        classId={selectedClass?.id}
+        className={selectedClass?.name}
+      />
     </div>
   );
 };
