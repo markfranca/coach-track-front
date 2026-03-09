@@ -37,7 +37,6 @@ export const useClasses = () => {
       
       console.log('📦 Array normalizado:', dataArray);
       
-      // Processa os dados e adiciona campos computados
       const processedClasses = dataArray.map(c => ({
         ...c,
         studentsCount: c.students?.length || 0,

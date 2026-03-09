@@ -35,15 +35,24 @@ export interface Class {
   category?: string;
 }
 
-export interface Student {
+export interface Person {
   id: number;
   name: string;
   email: string;
-  phone?: string;
-  birthDate?: string;
+  cpf: string;
+  phone: string;
+  birthDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Student {
+  id: number;
+  personId: number;
   classId: number;
   createdAt: string;
   updatedAt: string;
+  person: Person;
 }
 
 export interface DashboardStats {

@@ -1,4 +1,5 @@
 import api from './api';
+import type { Student } from '../types/class';
 
 export interface StudentCreate {
   name: string;
@@ -9,8 +10,18 @@ export interface StudentCreate {
 }
 
 export const studentService = {
-  async addToClass(classId: number, studentData: StudentCreate): Promise<any> {
-    const response = await api.post(`/classes/${classId}/students`, studentData);
+  async getByClass(classId: number): Promise<Student[]> {
+    const response = await api.get<Student[]>(`/classes/${classId}/students`);
+    return response.data;
+  },
+
+  async addToClass(classId: number, studentData: StudentCreate): Promise<Student> {
+    const response = await api.post<Student>(`/classes/${classId}/students`, studentData);
+    return response.data;
+  },
+
+  async update(classId: number, studentId: number, studentData: Partial<StudentCreate>): Promise<Student> {
+    const response = await api.put<Student>(`/classes/${classId}/students/${studentId}`, studentData);
     return response.data;
   },
 

@@ -46,15 +46,8 @@ export const DashboardPage = () => {
     setSelectedClass(null);
   };
 
-  // Calcula estatísticas - verifica se classes é um array
-  console.log('🔍 Classes do hook:', classes);
-  console.log('🔍 É array?', Array.isArray(classes));
-  console.log('🔍 Length:', classes?.length);
-  
+  // Calcula estatísticas
   const classesArray = Array.isArray(classes) ? classes : [];
-  
-  console.log('📊 Classes Array:', classesArray);
-  console.log('📊 Total:', classesArray.length);
   
   const totalClasses = classesArray.length;
   const totalStudents = classesArray.reduce((sum, c) => sum + (c.studentsCount || 0), 0);
@@ -63,10 +56,6 @@ export const DashboardPage = () => {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       )[0]
     : null;
-  
-  console.log('📊 Total de turmas:', totalClasses);
-  console.log('📊 Total de alunos:', totalStudents);
-  console.log('📊 Turma mais recente:', recentClass);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
