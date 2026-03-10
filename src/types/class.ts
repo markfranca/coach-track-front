@@ -55,6 +55,26 @@ export interface Student {
   person: Person;
 }
 
+export interface Absence {
+  id: number;
+  studentId: number;
+  classId: number;
+  date: string;
+  reason?: string;
+  createdAt: string;
+  student?: Student;
+}
+
+export interface Activity {
+  id: number;
+  classId: number;
+  title: string;
+  description?: string;
+  dueDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DashboardStats {
   totalClasses: number;
   totalStudents: number;

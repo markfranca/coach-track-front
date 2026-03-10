@@ -24,26 +24,52 @@ const SearchTab = ({
   onSuccess: () => void;
 }) => {
   const { students, isLoading, error, search, setSearch } = useTeacherStudents();
-  const [enrollingId, setEnrollingId] = useState<number | null>(null);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [isEnrolling, setIsEnrolling] = useState(false);
   const [enrollError, setEnrollError] = useState('');
-
-  const handleEnroll = async (student: StudentSummary) => {
-    setEnrollingId(student.id);
-    setEnrollError('');
-    try {
-      await studentService.enrollExisting(classId, student.id);
-      onSuccess();
-    } catch (err: any) {
-      setEnrollError(err.response?.data?.message || 'Erro ao adicionar aluno à turma.');
-    } finally {
-      setEnrollingId(null);
-    }
-  };
 
   const isEnrolled = (id: number) => enrolledStudentIds.includes(id);
 
+  const toggleSelect = (id: number) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const selectableStudents = students.filter((s) => !isEnrolled(s.id));
+
+  const allSelectableSelected =
+    selectableStudents.length > 0 &&
+    selectableStudents.every((s) => selected.has(s.id));
+
+  const toggleSelectAll = () => {
+    if (allSelectableSelected) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(selectableStudents.map((s) => s.id)));
+    }
+  };
+
+  const handleEnrollSelected = async () => {
+    if (selected.size === 0) return;
+    setIsEnrolling(true);
+    setEnrollError('');
+    try {
+      await studentService.enrollBulk(classId, Array.from(selected));
+      onSuccess();
+    } catch (err: any) {
+      setEnrollError(err.response?.data?.message || 'Erro ao adicionar alunos à turma.');
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
+      {/* Campo de busca */}
       <div className="relative">
         <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
@@ -62,7 +88,22 @@ const SearchTab = ({
         <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">{enrollError}</div>
       )}
 
-      <div className="overflow-y-auto max-h-72 flex flex-col gap-2 pr-1">
+      {/* Selecionar todos */}
+      {!isLoading && !error && selectableStudents.length > 1 && (
+        <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none px-1">
+          <input
+            type="checkbox"
+            checked={allSelectableSelected}
+            onChange={toggleSelectAll}
+            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+          />
+          <span className="font-medium">Selecionar todos</span>
+          <span className="text-gray-400">({selectableStudents.length} disponíveis)</span>
+        </label>
+      )}
+
+      {/* Lista de alunos */}
+      <div className="overflow-y-auto max-h-64 flex flex-col gap-2 pr-1">
         {isLoading && (
           <div className="flex justify-center py-8">
             <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
@@ -83,32 +124,68 @@ const SearchTab = ({
 
         {(students as StudentSummary[]).map((student) => {
           const already = isEnrolled(student.id);
+          const isChecked = selected.has(student.id);
           return (
-            <div key={student.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                  {student.person.name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 leading-tight">{student.person.name}</p>
-                  <p className="text-xs text-gray-500">{student.person.email}</p>
-                </div>
+            <label
+              key={student.id}
+              className={`flex items-center gap-3 p-3 border rounded-xl transition-colors ${
+                already
+                  ? 'border-gray-100 bg-gray-50 cursor-default opacity-60'
+                  : isChecked
+                  ? 'border-blue-300 bg-blue-50 cursor-pointer'
+                  : 'border-gray-100 hover:bg-gray-50 cursor-pointer'
+              }`}
+            >
+              <input
+                type="checkbox"
+                disabled={already}
+                checked={already ? false : isChecked}
+                onChange={() => !already && toggleSelect(student.id)}
+                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0 cursor-pointer disabled:cursor-default"
+              />
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                {student.person.name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()}
               </div>
-              {already ? (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-900 leading-tight truncate">{student.person.name}</p>
+                <p className="text-xs text-gray-500 truncate">{student.person.email}</p>
+              </div>
+              {already && (
                 <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full flex-shrink-0">Já na turma</span>
-              ) : (
-                <button
-                  onClick={() => handleEnroll(student)}
-                  disabled={enrollingId === student.id}
-                  className="flex-shrink-0 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  {enrollingId === student.id ? 'Adicionando...' : 'Adicionar'}
-                </button>
               )}
-            </div>
+            </label>
           );
         })}
       </div>
+
+      {/* Rodapé com ação de bulk */}
+      {selected.size > 0 && (
+        <div className="border-t border-gray-100 pt-3 flex items-center justify-between gap-3">
+          <span className="text-sm text-gray-600">
+            <span className="font-semibold text-blue-600">{selected.size}</span>{' '}
+            {selected.size === 1 ? 'aluno selecionado' : 'alunos selecionados'}
+          </span>
+          <button
+            onClick={handleEnrollSelected}
+            disabled={isEnrolling}
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+          >
+            {isEnrolling ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Adicionando...
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Adicionar {selected.size === 1 ? 'aluno' : `${selected.size} alunos`}
+              </>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

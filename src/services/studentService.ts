@@ -45,6 +45,15 @@ export const studentService = {
     return response.data;
   },
 
+
+  async enrollBulk(classId: number, studentIds: number[]): Promise<void> {
+    await Promise.all(
+      studentIds.map((id) =>
+        api.post(`/class-students/${classId}/students/enroll`, { studentId: id }),
+      ),
+    );
+  },
+
   async addToClass(classId: number, studentData: StudentCreate): Promise<Student> {
     const response = await api.post<Student>(`/class-students/${classId}/students`, studentData);
     return response.data;
