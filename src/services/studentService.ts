@@ -11,12 +11,12 @@ export interface StudentCreate {
 
 export const studentService = {
   async getByClass(classId: number): Promise<Student[]> {
-    const response = await api.get<Student[]>(`/classes/${classId}/students`);
+    const response = await api.get<Student[]>(`/class-students/${classId}/students`);
     return response.data;
   },
 
   async addToClass(classId: number, studentData: StudentCreate): Promise<Student> {
-    const response = await api.post<Student>(`/classes/${classId}/students`, studentData);
+    const response = await api.post<Student>(`/class-students/${classId}/students`, studentData); 
     return response.data;
   },
 

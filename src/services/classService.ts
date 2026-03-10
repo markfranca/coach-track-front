@@ -25,4 +25,9 @@ export const classService = {
   async delete(id: number): Promise<void> {
     await api.delete(`/classes/${id}`);
   },
+
+  async getAllClassesByTeacherId(teacherId: string | number): Promise<Class[]> {
+    const response = await api.get<Class[]>(`/classes/teacher/${teacherId}`);
+    return response.data;
+  },
 };
