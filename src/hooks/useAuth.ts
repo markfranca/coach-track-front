@@ -27,9 +27,7 @@ export const useAuth = () => {
       } else if (err.message) {
         errorMessage = err.message;
       }
-      
       setError(errorMessage);
-      console.error('💬 Mensagem de erro:', errorMessage);
     } finally {
       setIsLoading(false);
     }

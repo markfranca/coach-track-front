@@ -1,6 +1,16 @@
 import api from './api';
 import type { Class } from '../types/class';
 
+const getTeacherId = (): string | null => {
+  try {
+    const raw = localStorage.getItem('user');
+    if (!raw) return null;
+    return JSON.parse(raw)?.profile?.id ?? null;
+  } catch {
+    return null;
+  }
+};
+
 export const classService = {
   async getAll(): Promise<Class[]> {
     const response = await api.get<Class[]>('/classes/');
@@ -13,7 +23,8 @@ export const classService = {
   },
 
   async create(data: { name: string; description?: string; schedule?: string }): Promise<Class> {
-    const response = await api.post<Class>('/classes/', data);
+    const teacherId = getTeacherId();
+    const response = await api.post<Class>('/classes/', { ...data, teacherId });
     return response.data;
   },
 

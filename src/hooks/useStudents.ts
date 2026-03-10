@@ -13,8 +13,6 @@ export const useStudents = (classId: number) => {
     try {
       const data = await studentService.getByClass(classId);
       const arr = Array.isArray(data) ? data : [];
-      console.log(data);
-      
       setStudents(arr);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Erro ao carregar alunos');

@@ -54,7 +54,6 @@ export const ClassModal = ({ isOpen, onClose, onSuccess, classData }: ClassModal
       onSuccess();
       onClose();
     } catch (err: any) {
-      console.error('Erro ao salvar turma:', err);
       setError(err.response?.data?.message || 'Erro ao salvar turma');
     } finally {
       setIsLoading(false);
@@ -78,7 +77,6 @@ export const ClassModal = ({ isOpen, onClose, onSuccess, classData }: ClassModal
       onSuccess();
       onClose();
     } catch (err: any) {
-      console.error('Erro ao excluir turma:', err);
       setError(err.response?.data?.message || 'Erro ao excluir turma');
     } finally {
       setIsLoading(false);

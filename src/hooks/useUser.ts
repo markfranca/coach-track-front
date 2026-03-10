@@ -16,7 +16,6 @@ export const useUser = () => {
       setUser(response.data);
       localStorage.setItem('user', JSON.stringify(response.data));
     } catch (err: any) {
-      console.error('Erro ao carregar dados do usuário:', err);
       setError(err.response?.data?.message || 'Erro ao carregar dados do usuário');
       const cachedUser = localStorage.getItem('user');
       if (cachedUser) {

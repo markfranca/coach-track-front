@@ -209,16 +209,17 @@ export const DashboardPage = () => {
         classData={selectedClass}
       />
 
-      <AddStudentModal
-        isOpen={isAddStudentModalOpen}
-        onClose={() => {
-          setIsAddStudentModalOpen(false);
-          setSelectedClass(null);
-        }}
-        onSuccess={handleStudentSuccess}
-        classId={selectedClass?.id}
-        className={selectedClass?.name}
-      />
+      {isAddStudentModalOpen && selectedClass && (
+        <AddStudentModal
+          classId={selectedClass.id}
+          enrolledStudentIds={[]}
+          onClose={() => {
+            setIsAddStudentModalOpen(false);
+            setSelectedClass(null);
+          }}
+          onSuccess={handleStudentSuccess}
+        />
+      )}
     </div>
   );
 };
